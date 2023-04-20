@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
     
 env:
-  DOCKER_VERSION_TAG: 1.0.2
+  DOCKER_VERSION_TAG: 1.0.0
 
 jobs:
   build-and-push:
