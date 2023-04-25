@@ -1,0 +1,48 @@
+version: '3.7'
+
+networks:
+  gitlab-net:
+    name: gitlab-network
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    hostname: 'gitlab'
+    container_name: gitlab-ce
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab'
+    ports:
+      - '8080:80'
+      - '8443:443'
+    volumes:
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
+      - './gitlab/data:/var/opt/gitlab'
+    networks:
+      - gitlab-net
+  
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - './gitlab/gitlab-runner:/etc/gitlab-runner'
+    networks:
+      - gitlab-net
+
+  gitlab-runner-shell:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-shell
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - './gitlab/gitlab-runner:/etc/gitlab-runner'
+    networks:
+      - gitlab-net
